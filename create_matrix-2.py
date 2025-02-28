@@ -68,7 +68,7 @@ for i, f in enumerate(inputFiles):
         #        unique_menu_items.add(item['name'])
         products=pd.read_csv(productFiles[i])
         for index, row in products.iterrows():
-            unique_menu_items.add(row['productId']+"-"+row['productName'])
+            unique_menu_items.add(row['productName'])
 
         columns = ['userID', 'applied discount', 'order type', 'order date', 'prep time', 'discount',
                    'organization fee', 'organizationStripeFee', 'stripeFee', 'subtotal', 'taxes', 'total',
