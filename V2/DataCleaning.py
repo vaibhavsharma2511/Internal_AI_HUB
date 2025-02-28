@@ -128,15 +128,14 @@ df_final = pd.concat([df_orders, df_pivot], axis=1).drop(columns=['orderItems.me
 # df_final = df_final.drop(columns=['customer.phoneNumber'])
 # print(df_final.head(1))
 
-df_final = df_final.groupby('customer.phoneNumber', as_index=False).max()
+df_final = df_final.groupby('customer.phoneNumber', as_index=False).sum()
 df_final = df_final.drop(columns=['customer.phoneNumber'])
 df_final.to_csv('df_final.csv', index=False)
 
 # calculate co-occurrence matrix
 x = np.array(df_final)
 y = np.array(df_final.T)
-print(x.shape)
-print(y.shape)
+
 co_matrix = np.dot(y,x)
 np.fill_diagonal(co_matrix, 0)
 columns_list = df_final.columns
@@ -147,17 +146,7 @@ df_co.to_csv('df_co.csv', index=False)
 # print(y)
 
 
-def recommend_items(order, top_n=3):
-    """
-    Given a list of ordered items, recommend the top-N frequently co-ordered items.
-    
-    Parameters:
-    order (list): List of items in the current order.
-    top_n (int): Number of recommendations to return.
-    
-    Returns:
-    list: Recommended menu items.
-    """
+def recommend_items(order, top_n):
     recommended_items = {}
 
     for item in order:
@@ -177,6 +166,6 @@ def recommend_items(order, top_n=3):
     
     return final_recommendations[:top_n]
 
-user_order = ['13. Thai Noodle Soup', '28. Thai Basil Prawns Stir-fry','A2. Spring Rolls']
+user_order = ['13. Thai Noodle Soup', 'Mango Pudding with Small Chewy Ball']
 recommendations = recommend_items(user_order, top_n=5)
 print("Recommended items:", recommendations)
