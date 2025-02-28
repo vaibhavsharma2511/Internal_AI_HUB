@@ -30,7 +30,7 @@ cosine_sim_matrix = pd.DataFrame(
 # print(cosine_sim_matrix)
 import seaborn as sns
 # Convert to a sparse matrix
-sparse_matrix = csr_matrix(cooccurrence_matrix)
+'''sparse_matrix = csr_matrix(cooccurrence_matrix)
 
 # Compute cosine similarity efficiently
 item_similarity = cosine_similarity(sparse_matrix.T, dense_output=False)
@@ -43,12 +43,16 @@ plt.figure(figsize=(100,100))
 sns.heatmap(item_sim_df, annot=True, cmap="coolwarm", fmt=".2f")
 plt.title("Item Similarity Heatmap")
 plt.savefig('heatmap.png')
+'''
 
 cosine_sim_matrix.to_csv('generatedFiles/similarity.csv', encoding='utf-8')
 
 
 def recommend(item, cosine_sim_matrix, top_n=10):
-    return cosine_sim_matrix[item].sort_values(ascending=False).head(top_n).index.tolist()
+    recommendations=cosine_sim_matrix[item].sort_values(ascending=False).head(top_n+1).index.tolist()
+    if product in recommendations:
+        recommendations.remove(product)
+    return recommendations[:top_n]
 
 
 # Example recommendation
