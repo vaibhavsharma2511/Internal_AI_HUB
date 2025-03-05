@@ -41,7 +41,7 @@ class CreateProducts:
                     productRows.append(row)
 
                 # Create the DataFrame
-                df = pd.DataFrame(rows, columns=['productId', 'category'])
+               # df = pd.DataFrame(rows, columns=['productId', 'category'])
                 df_products = pd.DataFrame(productRows, columns=['productName','productId', 'price'])
-                df_final=pd.merge(df,df_products,on='productId')
-                df_final.to_csv(self.outputFiles[i], encoding='utf-8')
+               # df_final=pd.merge(df,df_products,on='productId')
+                df_products.to_csv(self.outputFiles[i], encoding='utf-8')
