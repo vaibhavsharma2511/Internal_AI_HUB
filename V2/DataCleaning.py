@@ -7,7 +7,7 @@ import os
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 # Define the data path
-DATA_PATH = "/Users/vaibhavsharma/Documents/AI_HUB_Research_Assistant/NextGen_Kitchens/data-cleaned/v2/clubkitchen/"
+DATA_PATH = "/Users/david/OneDrive/Documents/Recommender_System/Internal_AI_HUB/V2/"
 RESTAURANTS = [
     "FxPd8j5iWTbtvgmah8Z6", "k4elsyVbBmSu24TpNT8u", "kp87Hw65qxgTbabj66Q8",
     "mMxlfT2CB6nlWSbwtLbl", "sO7hcYzRudGq9id9wOvs", "ZIFwnuY716EUk2PG55IU", "ZoVPhvcboPFTsoSpdLNH"
@@ -22,7 +22,7 @@ def load_menu_items():
         menu_path = os.path.join(DATA_PATH, restaurant_id, "MenuItems.json")
         
         try:
-            with open(menu_path, "r") as file:
+            with open(menu_path, "r", encoding="utf-8") as file:
                 data = json.load(file)
                 for item in data.get("data", {}).values():
                     menu_items.append({
@@ -40,14 +40,19 @@ def load_orders():
     orders_path = os.path.join(DATA_PATH, "Orders-cleaned.json")
 
     try:
-        with open(orders_path, "r") as file:
+        with open(orders_path, "r", encoding="utf-8") as file:
             data = json.load(file)
             orders = []
 
             for order in data.get("data", {}).values():
+                # Skip orders with null or empty phone numbers
+                phone_number = order.get("customer", {}).get("phoneNumber", "")
+                if not phone_number:  # Skip if phone number is null or empty
+                    continue
+
                 for item in order.get("orderItems", []):
                     orders.append({
-                        "customer.phoneNumber": order.get("customer", {}).get("phoneNumber", ""),
+                        "customer.phoneNumber": phone_number,
                         "orderItems.menuItemId": item.get("menuItemId", "")
                     })
 
@@ -79,6 +84,11 @@ if __name__ == "__main__":
     if df_menu_items.empty or df_orders.empty:
         logging.error("Menu items or orders data is empty. Exiting...")
     else:
+        # Ensure no null values in customer.phoneNumber
+        if df_orders["customer.phoneNumber"].isnull().any():
+            logging.warning("Null values found in customer.phoneNumber. Removing them...")
+            df_orders = df_orders.dropna(subset=["customer.phoneNumber"])
+
         # df_menu_items.to_csv("V2/df_menu_items.csv", index=False)
         df_final = generate_user_menu_matrix(df_orders, df_menu_items)
         df_final.to_csv("V2/df_final.csv", index=False)
