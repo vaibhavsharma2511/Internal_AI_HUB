@@ -1,0 +1,27 @@
+2025-03-07 11:15:17,179 - Importing the MENU ITEM JSON Files of Different Restaurants
+2025-03-07 11:15:17,179 - Processing menu items for restaurant: FxPd8j5iWTbtvgmah8Z6
+2025-03-07 11:15:17,180 - Successfully processed 93 items for restaurant: FxPd8j5iWTbtvgmah8Z6
+2025-03-07 11:15:17,180 - Processing menu items for restaurant: k4elsyVbBmSu24TpNT8u
+2025-03-07 11:15:17,181 - Successfully processed 113 items for restaurant: k4elsyVbBmSu24TpNT8u
+2025-03-07 11:15:17,181 - Processing menu items for restaurant: kp87Hw65qxgTbabj66Q8
+2025-03-07 11:15:17,182 - Successfully processed 45 items for restaurant: kp87Hw65qxgTbabj66Q8
+2025-03-07 11:15:17,182 - Processing menu items for restaurant: mMxlfT2CB6nlWSbwtLbl
+2025-03-07 11:15:17,184 - Successfully processed 74 items for restaurant: mMxlfT2CB6nlWSbwtLbl
+2025-03-07 11:15:17,184 - Processing menu items for restaurant: sO7hcYzRudGq9id9wOvs
+2025-03-07 11:15:17,185 - Successfully processed 61 items for restaurant: sO7hcYzRudGq9id9wOvs
+2025-03-07 11:15:17,185 - Processing menu items for restaurant: ZIFwnuY716EUk2PG55IU
+2025-03-07 11:15:17,186 - Successfully processed 76 items for restaurant: ZIFwnuY716EUk2PG55IU
+2025-03-07 11:15:17,186 - Processing menu items for restaurant: ZoVPhvcboPFTsoSpdLNH
+2025-03-07 11:15:17,186 - Successfully processed 48 items for restaurant: ZoVPhvcboPFTsoSpdLNH
+2025-03-07 11:15:17,188 - Menu items data loaded into DataFrame with 510 records
+2025-03-07 11:15:17,193 - Menu items CSV saved as 'V2/df_menu_items.csv'
+2025-03-07 11:15:17,193 - Importing Orders Files and making a matrix
+2025-03-07 11:15:17,235 - Processed 1513 order items from Orders file
+2025-03-07 11:15:17,236 - Orders data loaded into DataFrame with 1513 records
+2025-03-07 11:15:17,239 - No duplicate menu item IDs found
+2025-03-07 11:15:17,242 - Merged orders data with menu items data
+2025-03-07 11:15:17,243 - Pivot table created with 231 one-hot encoded columns
+2025-03-07 11:15:17,243 - Pivot table concatenated with orders data, redundant column removed
+2025-03-07 11:15:17,249 - Data grouped by customer phone number. Final dataset contains 582 unique customers
+2025-03-07 11:15:17,261 - User-to-menu item matrix CSV saved as 'V2/df_final.csv'
+2025-03-07 11:15:17,261 - User to menu items matrix creation process completed

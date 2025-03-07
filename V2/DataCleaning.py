@@ -1,86 +1,114 @@
 import pandas as pd
 import json
+import numpy as np
 import logging
-import os
 
-# Configure logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+# Set up logging configuration to log to both console and file
+logging.basicConfig(
+    filename='V2/recommendation_logs.log',  # Log file path
+    level=logging.INFO,  # Log level (INFO, DEBUG, etc.)
+    format='%(asctime)s - %(message)s',  # Log format (timestamp + message)
+    filemode='w'  # Overwrite the log file each time the program runs
+)
 
-# Define the data path
-DATA_PATH = "/Users/vaibhavsharma/Documents/AI_HUB_Research_Assistant/NextGen_Kitchens/data-cleaned/v2/clubkitchen/"
-RESTAURANTS = [
-    "FxPd8j5iWTbtvgmah8Z6", "k4elsyVbBmSu24TpNT8u", "kp87Hw65qxgTbabj66Q8",
-    "mMxlfT2CB6nlWSbwtLbl", "sO7hcYzRudGq9id9wOvs", "ZIFwnuY716EUk2PG55IU", "ZoVPhvcboPFTsoSpdLNH"
-]
+# Define the path to the restaurant data
+path = '/Users/vaibhavsharma/Documents/AI_HUB_Research_Assistant/NextGen_Kitchens/data-cleaned/v2/clubkitchen/'
 
-# Function to load menu items from multiple restaurants
-def load_menu_items():
-    logging.info("Importing MENU ITEM JSON Files of Different Restaurants")
-    menu_items = []
+# List of restaurant IDs to process
+restaurants = ['FxPd8j5iWTbtvgmah8Z6','k4elsyVbBmSu24TpNT8u','kp87Hw65qxgTbabj66Q8','mMxlfT2CB6nlWSbwtLbl',
+               'sO7hcYzRudGq9id9wOvs','ZIFwnuY716EUk2PG55IU','ZoVPhvcboPFTsoSpdLNH']
 
-    for restaurant_id in RESTAURANTS:
-        menu_path = os.path.join(DATA_PATH, restaurant_id, "MenuItems.json")
-        
-        try:
-            with open(menu_path, "r") as file:
-                data = json.load(file)
-                for item in data.get("data", {}).values():
-                    menu_items.append({
-                        "id": item.get("id", ""),
-                        "name": item.get("name", "")
-                    })
-        except (FileNotFoundError, json.JSONDecodeError) as e:
-            logging.warning(f"Error loading {menu_path}: {e}")
+logging.info("Importing the MENU ITEM JSON Files of Different Restaurants")
 
-    return pd.DataFrame(menu_items)
+# Initialize list to store menu items data
+rows = []
 
-# Function to load orders data
-def load_orders():
-    logging.info("Importing Orders Files and making a matrix")
-    orders_path = os.path.join(DATA_PATH, "Orders-cleaned.json")
-
+# Iterate through each restaurant ID and load the corresponding MenuItems.json file
+for restaurant_id in restaurants:
     try:
-        with open(orders_path, "r") as file:
+        logging.info(f"Processing menu items for restaurant: {restaurant_id}")
+        with open(path+restaurant_id+'/MenuItems.json', "r") as file:
             data = json.load(file)
-            orders = []
+        
+        # Extract items under the 'data' key
+        items = data["data"]
+        
+        # Flatten the data into a list of dictionaries (one row for each menu item)
+        for item_id, item in items.items():
+            rows.append({
+                "id": item.get("id", ""),
+                "name": item.get("name", "")
+            })
+        logging.info(f"Successfully processed {len(items)} items for restaurant: {restaurant_id}")
+    
+    except Exception as e:
+        logging.error(f"Error processing menu items for restaurant {restaurant_id}: {e}")
 
-            for order in data.get("data", {}).values():
-                for item in order.get("orderItems", []):
-                    orders.append({
-                        "customer.phoneNumber": order.get("customer", {}).get("phoneNumber", ""),
-                        "orderItems.menuItemId": item.get("menuItemId", "")
-                    })
+# Convert list of dictionaries into a DataFrame
+df_menu_items = pd.DataFrame(rows)
+logging.info(f"Menu items data loaded into DataFrame with {len(df_menu_items)} records")
 
-            return pd.DataFrame(orders)
-    except (FileNotFoundError, json.JSONDecodeError) as e:
-        logging.error(f"Error loading {orders_path}: {e}")
-        return pd.DataFrame(columns=["customer.phoneNumber", "orderItems.menuItemId"])
+# Save the menu items DataFrame to a CSV file
+df_menu_items.to_csv('V2/df_menu_items.csv', index=False)
+logging.info("Menu items CSV saved as 'V2/df_menu_items.csv'")
 
-# Function to process and generate the user-to-menu items matrix
-def generate_user_menu_matrix(df_orders, df_menu_items):
-    logging.info("Merging order data with menu items")
+# Import Orders JSON file
+logging.info("Importing Orders Files and making a matrix")
+try:
+    with open(path+'Orders-cleaned.json', "r") as file:
+        data = json.load(file)
 
-    # Merge orders with menu items
-    df_merged = df_orders.merge(df_menu_items, left_on="orderItems.menuItemId", right_on="id", how="left")
+    # Extract order data from the JSON file
+    orders = data.get("data", {})
+    
+    # Initialize list to store order-related data
+    rows_orders = []
+    
+    # Flatten order data into a list of dictionaries
+    for order_id, order in orders.items():
+        order_items = order.get("orderItems", [])
+        
+        for item in order_items:
+            rows_orders.append({
+                "customer.phoneNumber": order.get("customer", {}).get("phoneNumber", ""),
+                "orderItems.menuItemId": item.get("menuItemId", "")
+            })
+    logging.info(f"Processed {len(rows_orders)} order items from Orders file")
 
-    # One-hot encode menu item names
-    df_pivot = pd.get_dummies(df_merged["name"]).astype(int)
+except Exception as e:
+    logging.error(f"Error importing or processing Orders file: {e}")
 
-    # Aggregate purchases by customer
-    df_final = df_orders[["customer.phoneNumber"]].join(df_pivot).groupby("customer.phoneNumber").sum()
+# Convert the order data into a DataFrame
+df_orders = pd.DataFrame(rows_orders)
+logging.info(f"Orders data loaded into DataFrame with {len(df_orders)} records")
 
-    return df_final.reset_index(drop=True)
+# Check for duplicate menuItem IDs in the menu items DataFrame
+id_counts = df_menu_items['id'].value_counts()
+multiple_id = id_counts[id_counts > 1]
+if not multiple_id.empty:
+    logging.warning(f"Multiple instances of the following menu item IDs found: {multiple_id}")
+else:
+    logging.info("No duplicate menu item IDs found")
 
-# Main execution
-if __name__ == "__main__":
-    df_menu_items = load_menu_items()
-    df_orders = load_orders()
+# Merging orders and menu items based on menu item ID
+df_merged = df_orders.merge(df_menu_items, left_on='orderItems.menuItemId', right_on='id', how='left')
+logging.info("Merged orders data with menu items data")
 
-    if df_menu_items.empty or df_orders.empty:
-        logging.error("Menu items or orders data is empty. Exiting...")
-    else:
-        # df_menu_items.to_csv("V2/df_menu_items.csv", index=False)
-        df_final = generate_user_menu_matrix(df_orders, df_menu_items)
-        df_final.to_csv("V2/df_final.csv", index=False)
+# Step 2: Create pivot table using one-hot encoding for menu item names
+df_pivot = pd.get_dummies(df_merged['name']).astype(int)
+logging.info(f"Pivot table created with {df_pivot.shape[1]} one-hot encoded columns")
 
-        logging.info("User-To-MenuItems Matrix Created Successfully")
+# Step 3: Combine the pivot table with the original order data, dropping the redundant menu item ID column
+df_final = pd.concat([df_orders, df_pivot], axis=1).drop(columns=['orderItems.menuItemId'])
+logging.info("Pivot table concatenated with orders data, redundant column removed")
+
+# Group by customer phone number and sum up the item quantities
+df_final = df_final.groupby('customer.phoneNumber', as_index=False).sum()
+logging.info(f"Data grouped by customer phone number. Final dataset contains {df_final.shape[0]} unique customers")
+
+# Save the final DataFrame to a CSV file
+df_final.to_csv('V2/df_final.csv', index=False)
+logging.info("User-to-menu item matrix CSV saved as 'V2/df_final.csv'")
+
+# Completion message
+logging.info("User to menu items matrix creation process completed")

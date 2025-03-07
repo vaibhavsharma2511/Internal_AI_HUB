@@ -1,0 +1,13 @@
+2025-03-07 11:17:29,278 - Loading the User-Menu Matrix CSV file
+2025-03-07 11:17:29,288 - Loaded 582 users from df_final
+2025-03-07 11:17:29,289 - Calculating co-occurrence matrix
+2025-03-07 11:17:29,307 - Co-occurrence matrix saved as 'V2/df_co.csv'
+2025-03-07 11:17:29,307 - Creating user-item recommendation matrix
+2025-03-07 11:17:29,331 - User-item recommendation matrix saved as 'V2/df_user_recommend.csv'
+2025-03-07 11:17:29,331 - ----------------POPULAR ITEMS RECOMMENDATION-----------------------------
+2025-03-07 11:17:29,331 - Recommending top 10 popular items
+2025-03-07 11:17:29,332 - Popular items: ['20. Pad Thai', '18. Pad Si Ew', 'Cheeseburger', "Betty's Burger ", '7UP', 'Callister Cream Soda', 'Salmon Oshi - 6pc', 'L1. Pad Thai*', 'Ice Pop - Mr. Freeze', 'House Special Beef Noodle Soup (原汁牛肉麵)']
+2025-03-07 11:17:29,332 - ----------------------------ITEM RECOMMENDATION-----------------------------
+2025-03-07 11:17:29,332 - Recommended items for order ['IND Zero (355 mL)', '12. Tom Yum Kung']: ['Bo Bo Bowl 爆爆碗', 'Chicken nuggets w/spicy soy sauce on fried rice(椒麻鹹酥雞炒飯)', 'Scallion Beef Slices Bento(蔥爆牛肉便當)', 'Bowl Of Fries', '18. Pad Si Ew', '8. Thai Noodle Salad', 'Fried Red-Fermented Pork with Fried Rice (台式紅糟炒飯)', 'Chopstick', 'Bacon Cheeseburger', 'Fried fish cake (炸甜不辣 )']
+2025-03-07 11:17:29,332 - ----------------USER PERSONALIZED RECOMMENDATION-----------------------------
+2025-03-07 11:17:29,332 - Recommended items for user 00975814695fafb3a7cb32b2dd307ff6a6e690a62aaa7eee0a814b64ae056426: ['Dr. Pepper', '18. Pad Si Ew', 'Salmon Oshi - 6pc', 'Thai Ice Tea', 'L2. Pad Si Ew*', 'Salted Salmon Bento (feeds 1-2)', 'L4. Thai Fried Rice*', 'Tandoori Chicken Power Bowl', 'Pomelo&mango with sago Drink 杨枝金捞', 'Taro & Chewy Ball Tofu Pudding 芋泥小丸子豆花']
