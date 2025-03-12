@@ -19,6 +19,8 @@ def recommend(item, food_court, top_n=10):
 # Example recommendation
 product = 'Make it sundae'
 food_court='coho'
+
+
 recommendations = recommend(product, food_court)
 print("Recommendations for " + product + ":", recommendations)
 
