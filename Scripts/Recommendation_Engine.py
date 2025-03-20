@@ -102,7 +102,7 @@ logging.info(f"Popular items: {popular_items}")
 
 # Display co-occurrence based item recommendation
 logging.info("----------------------------ITEM RECOMMENDATION-----------------------------")
-user_order = ['IND Zero (355 mL)', '12. Tom Yum Kung']
+user_order = ['Grilled Chicken Bento (feeds 1-2)']
 recommendations = recommend_items(user_order, top_n=10)
 logging.info(f"Recommended items for order {user_order}: {recommendations}")
 
