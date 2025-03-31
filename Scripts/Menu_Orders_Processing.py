@@ -10,12 +10,12 @@ logging.basicConfig(
     format='%(asctime)s - %(message)s',
     handlers=[
         logging.StreamHandler(),  # To log to console
-        logging.FileHandler('logs_and_matrices/recommendation_logs.log', mode='w')  # To log to file and overwrite the file each time
+        logging.FileHandler('..//logs_and_matrices//recommendation_logs.log', mode='w')  # To log to file and overwrite the file each time
     ]
 )
 
 # Define the path to the restaurant data
-path = '/Users/vaibhavsharma/Documents/AI_HUB_Research_Assistant/NextGen_Kitchens/Recommendation_System/Data/clubkitchen/'
+path = r'C://Users//david//Desktop//next//insight-engage-main//Data//clubkitchen//'
 
 # To Get the List of restaurant IDs to process
 my_list = os.listdir(path)
@@ -24,12 +24,12 @@ logging.info("Importing the MENU ITEM JSON Files of Different Restaurants")
 
 # Initialize list to store menu items data
 rows = []
-
+rows_for_restaurant_id = []
 # Iterate through each restaurant ID and load the corresponding MenuItems.json file
 for restaurant_id in restaurants:
     try:
         logging.info(f"Processing menu items for restaurant: {restaurant_id}")
-        with open(path+restaurant_id+'/MenuItems.json', "r") as file:
+        with open(path+restaurant_id+'/MenuItems.json', "r",encoding='utf-8') as file:
             data = json.load(file)
         
         # Extract items under the 'data' key
@@ -41,6 +41,11 @@ for restaurant_id in restaurants:
                 "id": item.get("id", ""),
                 "name": item.get("name", "")
             })
+            rows_for_restaurant_id.append({
+                "id": item.get("id", ""),
+                "name": item.get("name", ""),
+                "restaurant_id": restaurant_id
+            })
         logging.info(f"Successfully processed {len(items)} items for restaurant: {restaurant_id}")
     
     except Exception as e:
@@ -48,16 +53,22 @@ for restaurant_id in restaurants:
 
 # Convert list of dictionaries into a DataFrame
 df_restaurant_menu = pd.DataFrame(rows)
+
+df_restaurant_menu_with_restaurent_id = pd.DataFrame(rows_for_restaurant_id)
+# df_restaurant_menu_with_restaurent_id['index_name'] = df_restaurant_menu_with_restaurent_id['name']
+# df_restaurant_menu_with_restaurent_id.set_index('index_name', inplace=True)
+
 logging.info(f"Menu items data loaded into DataFrame with {len(df_restaurant_menu)} records")
 
 # Save the menu items DataFrame to a CSV file
-df_restaurant_menu.to_csv('logs_and_matrices/df_restaurant_menu.csv', index=False)
+df_restaurant_menu.to_csv('..//logs_and_matrices//df_restaurant_menu.csv', index=False)
+df_restaurant_menu_with_restaurent_id.to_csv('..//logs_and_matrices//df_restaurant_menu_with_restaurent_id.csv', index=False)
 logging.info("Menu items CSV saved as 'logs_and_matrices/df_restaurant_menu.csv'")
 
 # Import Orders JSON file
 logging.info("Importing Orders Files and making a matrix")
 try:
-    with open(path+'Orders-cleaned.json', "r") as file:
+    with open(path+'Orders-cleaned.json', "r", encoding='utf-8' ) as file:
         data = json.load(file)
 
     # Extract order data from the JSON file
@@ -109,7 +120,7 @@ df_customer_item_matrix = df_customer_item_matrix.groupby('customer.phoneNumber'
 logging.info(f"Data grouped by customer phone number. Final dataset contains {df_customer_item_matrix.shape[0]} unique customers")
 
 # Save the final DataFrame to a CSV file
-df_customer_item_matrix.to_csv('logs_and_matrices/df_customer_item_matrix.csv', index=False)
+df_customer_item_matrix.to_csv('..//logs_and_matrices//df_customer_item_matrix.csv', index=False)
 logging.info("User-to-menu item matrix CSV saved as 'logs_and_matrices/df_customer_item_matrix.csv'")
 
 # Completion message
